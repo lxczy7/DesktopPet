@@ -1,0 +1,60 @@
+# ================= Python =================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# ================= 虚拟环境（915MB，绝不入库）=================
+.venv/
+venv/
+env/
+ENV/
+
+# ================= 打包相关 =================
+build/
+dist/
+*.manifest
+
+# ================= IDE / 编辑器 =================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ================= AI 工作记录（含本机路径与个人记录）=================
+.workbuddy/
+
+# ================= 素材中间产物 =================
+# 只保留成品帧 resources/frames/orig/ 与图标 resources/icons/
+resources/frames/raw/
+resources/frames/_tmp_gen/
+resources/frames/nobg/
+resources/frames/selected/
+resources/frames/orig_backup_*/
+
+# 生图工作区（体积大，且可由 utils/ 下脚本重新生成）
+generated-images/
+
+# 素材处理过程中的临时文件与备份
+resources/test_crop.png
+resources/frames/preview_contact_sheet.png
+resources/frames/orig/_*backup*/
+resources/icons/*_backup.ico
+
+# 运行效果截图（画面含桌面/项目列表等个人信息，不入库）
+# 如需展示效果，请另截一张只有宠物主体的干净图再单独 add
+跑通效果_截图*.png
+
+# ================= 系统 =================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ================= 临时 =================
+*.log
+_tmp/
+.pytest_cache/

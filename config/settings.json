@@ -1,0 +1,59 @@
+{
+  "pet": {
+    "size": 90,
+    "walk_speed": 2,
+    "idle_interval_min": 6000,
+    "idle_interval_max": 14000,
+    "sit_duration_min": 6000,
+    "sit_duration_max": 12000,
+    "lie_duration_min": 9000,
+    "lie_duration_max": 18000,
+    "walk_duration_min": 2000,
+    "walk_duration_max": 5000,
+    "bounds_margin": 50,
+    "animation_fps": 10,
+    "gaze_follow": true
+  },
+  "greet": {
+    "enabled": true,
+    "interval_min_minutes": 90,
+    "interval_max_minutes": 180
+  },
+  "wallpaper": {
+    "auto_change": true,
+    "change_interval_hours": 24,
+    "preferred_resolution": "1920x1080",
+    "last_change_time": 0
+  },
+  "screenshot": {
+    "auto_copy_to_clipboard": true,
+    "show_editor": true,
+    "include_cursor": false
+  },
+  "clipboard": {
+    "max_history": 50,
+    "ignore_images": false,
+    "auto_start_monitoring": true
+  },
+  "hotkeys": {
+    "toggle_pet": "ctrl+alt+o",
+    "screenshot_region": "ctrl+alt+a",
+    "screenshot_full": "ctrl+alt+s",
+    "next_wallpaper": "ctrl+alt+w"
+  },
+  "general": {
+    "auto_start": true,
+    "multi_monitor": true,
+    "click_through": false,
+    "show_tray_icon": true,
+    "language": "zh_CN"
+  },
+  "_config_version": 4,
+  "reminders": {
+    "enabled": true,
+    "drink_minutes": 45,
+    "sit_minutes": 60,
+    "quiet_start_hour": 22,
+    "quiet_end_hour": 8
+  }
+}
