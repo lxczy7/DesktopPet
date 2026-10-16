@@ -1,5 +1,6 @@
 """给设置面板截个图，确认新加的"宠物大小""健康提醒"两个区块显示正常"""
 import sys
+import tempfile
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
@@ -17,7 +18,7 @@ dlg.show()
 app.processEvents()
 app.processEvents()
 
-out = Path("C:/Users/Administrator/AppData/Local/Temp/settings_preview.png")
+out = Path(tempfile.gettempdir()) / "settings_preview.png"
 dlg.grab().save(str(out))
 print("saved:", out, dlg.size().width(), "x", dlg.size().height())
 

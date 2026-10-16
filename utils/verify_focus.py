@@ -25,6 +25,7 @@ app = QApplication.instance() or QApplication(sys.argv)
 from PySide6.QtCore import QPoint  # noqa: E402
 from core.pet_window import PetWindow, MOOD_PRESETS  # noqa: E402
 from core.animation_engine import PetState  # noqa: E402
+from config.settings_manager import settings  # noqa: E402
 from features.pomodoro import PomodoroService  # noqa: E402
 from features.breathing import BreathingService, PHASES  # noqa: E402
 from features.fun_interactions import (  # noqa: E402
@@ -268,12 +269,22 @@ check("F24. 取消输入时不返回回答（不打扰）", ans_cancel == "", re
 
 # ---------- F25 情绪打卡 ----------
 # 「不太好」映射到 tired -> lie 帧（躺下），区分度最强
+# mood_checkin 会把打卡记录写进 settings，测完必须恢复现场
+# （原本不存在的键要 delete，不能用 set(默认值) 固化）
+_mood_keys = ("mood.last_date", "mood.last_value")
+_mood_had = {k: settings.has(k) for k in _mood_keys}
+_mood_old = {k: settings.get(k) for k in _mood_keys}
 with patch("features.fun_interactions.QInputDialog.getItem",
            return_value=("不太好 😔", True)):
     picked = fun.mood_checkin()
+_f25_lie = pet._animation_engine.get_state() == PetState.LIE
+for _k in _mood_keys:
+    if _mood_had[_k]:
+        settings.set(_k, _mood_old[_k])
+    else:
+        settings.delete(_k)
 check("F25. 情绪打卡选中「不太好」后切到 lie 帧陪着你",
-      picked == "不太好 😔"
-      and pet._animation_engine.get_state() == PetState.LIE,
+      picked == "不太好 😔" and _f25_lie,
       f"picked={picked} state={pet._animation_engine.get_state().value}")
 
 # ---------- F26 情绪映射表完整性 ----------

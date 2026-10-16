@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['D:/软件/桌面工具/DesktopPet/resources/icons/pet.ico'],
+    icon=['resources/icons/pet.ico'],
 )

@@ -1,6 +1,6 @@
 # 从 openpets 借鉴的功能清单
 
-来源项目：`D:\软件\桌面工具\openpets-4.0.1\openpets-4.0.1`
+来源项目：`openpets-4.0.1`（Electron + TypeScript 的桌面宠物开源项目）
 （Electron + TypeScript 的桌面宠物平台，代码不能直接用，但设计范式很适合移植）
 
 ---

@@ -39,6 +39,10 @@ for i, color in enumerate([(255, 0, 0), (0, 255, 0), (0, 0, 255)]):
     Image.new("RGB", (64, 48), color).save(tmp / f"wall_{i}.jpg")
 Image.new("RGB", (32, 32), (0, 0, 0)).save(tmp / "screenshots" / "shot_1.png")
 
+# 记录键的「是否存在」，不能只记值 —— 原本不存在的键若用 set(默认值) 恢复，
+# 会被永久固化进 settings.json，导致 settings.get(key, default) 的兜底失效。
+had_local = settings.has("wallpaper.local_folder")
+had_cache = settings.has("wallpaper.cache_folder")
 old_local = settings.get("wallpaper.local_folder", "")
 old_cache = settings.get("wallpaper.cache_folder", "")
 settings.set("wallpaper.local_folder", str(tmp))
@@ -308,8 +312,15 @@ try:
             running.wait(15000)  # 等线程收尾，避免退出时残留
 
 finally:
-    settings.set("wallpaper.local_folder", old_local)
-    settings.set("wallpaper.cache_folder", old_cache)
+    # 原本不存在的键必须 delete；用 set(默认值) 会把它永久固化进 settings.json
+    if had_local:
+        settings.set("wallpaper.local_folder", old_local)
+    else:
+        settings.delete("wallpaper.local_folder")
+    if had_cache:
+        settings.set("wallpaper.cache_folder", old_cache)
+    else:
+        settings.delete("wallpaper.cache_folder")
 
 fails = [r for r in results if not r[1]]
 print(f"\n===== {len(results) - len(fails)}/{len(results)} 通过 =====")

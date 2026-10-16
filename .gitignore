@@ -45,6 +45,9 @@ resources/frames/preview_contact_sheet.png
 resources/frames/orig/_*backup*/
 resources/icons/*_backup.ico
 
+# 原型视频素材（体积大，按需自备到 assets/videos/）
+assets/videos/
+
 # 运行效果截图（画面含桌面/项目列表等个人信息，不入库）
 # 如需展示效果，请另截一张只有宠物主体的干净图再单独 add
 跑通效果_截图*.png

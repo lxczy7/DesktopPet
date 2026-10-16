@@ -34,27 +34,41 @@ def main() -> int:
     env.setdefault("QT_QPA_PLATFORM", "offscreen")
     env["PYTHONPATH"] = str(BASE)
 
+    # ⚠️ 兜底：验证脚本会经 SettingsManager.set 写入 config/settings.json
+    # （例如临时把壁纸目录指向 tmp）。跑完必须还原，否则测试残留会被固化进仓库 ——
+    # 曾把 wallpaper.local_folder 写成空串，导致 settings.get(key, default) 兜底失效。
+    settings_file = BASE / "config" / "settings.json"
+    backup = settings_file.read_bytes() if settings_file.exists() else None
+
     rows = []
-    for title, script in TESTS:
-        path = UTILS / script
-        if not path.exists():
-            rows.append((title, script, "SKIP", "脚本不存在"))
-            continue
+    try:
+        for title, script in TESTS:
+            path = UTILS / script
+            if not path.exists():
+                rows.append((title, script, "SKIP", "脚本不存在"))
+                continue
+            try:
+                proc = subprocess.run(
+                    [sys.executable, str(path)],
+                    cwd=str(BASE), env=env, timeout=PER_TEST_TIMEOUT,
+                    capture_output=True, text=True, encoding="utf-8", errors="replace")
+            except subprocess.TimeoutExpired:
+                rows.append((title, script, "TIMEOUT",
+                             f"超过 {PER_TEST_TIMEOUT}s（多为沙箱/远程环境下抓屏被限制）"))
+                continue
+            out = (proc.stdout or "") + (proc.stderr or "")
+            summary = next((l.strip() for l in reversed(out.splitlines())
+                            if "通过" in l or "PASS ===" in l or "全部" in l or "SKIP" in l), "")
+            fails = [l.strip() for l in out.splitlines() if l.startswith("FAIL")]
+            status = "PASS" if proc.returncode == 0 else "FAIL"
+            rows.append((title, script, status, summary or ("; ".join(fails[:2]) or "无输出")))
+    finally:
         try:
-            proc = subprocess.run(
-                [sys.executable, str(path)],
-                cwd=str(BASE), env=env, timeout=PER_TEST_TIMEOUT,
-                capture_output=True, text=True, encoding="utf-8", errors="replace")
-        except subprocess.TimeoutExpired:
-            rows.append((title, script, "TIMEOUT",
-                         f"超过 {PER_TEST_TIMEOUT}s（多为沙箱/远程环境下抓屏被限制）"))
-            continue
-        out = (proc.stdout or "") + (proc.stderr or "")
-        summary = next((l.strip() for l in reversed(out.splitlines())
-                        if "通过" in l or "PASS ===" in l or "全部" in l or "SKIP" in l), "")
-        fails = [l.strip() for l in out.splitlines() if l.startswith("FAIL")]
-        status = "PASS" if proc.returncode == 0 else "FAIL"
-        rows.append((title, script, status, summary or ("; ".join(fails[:2]) or "无输出")))
+            if backup is not None and settings_file.read_bytes() != backup:
+                settings_file.write_bytes(backup)
+                print("[配置还原] config/settings.json 已恢复为回归前状态")
+        except OSError:
+            pass
 
     print("=" * 78)
     print("桌面宠物 · 全量功能回归")

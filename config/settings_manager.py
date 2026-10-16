@@ -5,6 +5,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from PySide6.QtCore import QSettings, QStandardPaths
 
+# 哨兵：用于区分"键不存在"与"键的值恰好是 None"
+_MISSING = object()
+
 
 class SettingsManager:
     _instance = None
@@ -92,6 +95,32 @@ class SettingsManager:
         keys = key.split(".")
         self._set_nested(self._data, keys, value)
         self._qt_settings.setValue(key, value)
+        self.save()
+
+    def has(self, key: str) -> bool:
+        """判断配置键是否**真实存在于文件中**。
+
+        与 ``get(key, default)`` 的区别：get 的 default 只在键不存在时生效，
+        所以「键不存在」和「键的值是空串」在 get 看来是两回事，
+        但业务代码里往往需要前者（才能正确走兜底路径）。
+        """
+        return self._get_nested(self._data, key.split("."), _MISSING) is not _MISSING
+
+    def delete(self, key: str) -> None:
+        """删除配置键（支持点号嵌套），并同步清掉 QSettings 里的旧值。
+
+        ⚠️ 恢复现场时不要用 ``set(key, 默认值)`` —— 那会把键**永久固化**进
+        settings.json，导致后续 ``get(key, default)`` 的兜底失效。
+        原本就不存在的键，必须用 delete 移除。
+        """
+        keys = key.split(".")
+        parent = self._get_nested(self._data, keys[:-1], _MISSING)
+        if isinstance(parent, dict):
+            parent.pop(keys[-1], None)
+        try:
+            self._qt_settings.remove(key)
+        except Exception:
+            pass
         self.save()
 
     def get_section(self, section: str) -> Dict[str, Any]:

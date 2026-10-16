@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QRectF, QEvent, QPointF, Qt
 from PySide6.QtGui import QMouseEvent, QKeyEvent, QGuiApplication
 from unittest.mock import patch
+import tempfile
 
 app = QApplication(sys.argv)
 
@@ -49,7 +50,7 @@ check("E2. 悬浮窗有四个工具按钮 + 状态标签",
 # ============ E3: 保存（patch 掉真实写盘目标） ============
 print("--- E3：保存 ---")
 saved_cb = []
-fake_path = Path("C:/Users/Administrator/Pictures/fake_shot.png")
+fake_path = Path(tempfile.gettempdir()) / "fake_shot.png"
 floating._on_saved = lambda path: saved_cb.append(path)
 with patch.object(ScreenshotTool, "save_pixmap", staticmethod(lambda im: fake_path)), \
      patch.object(ScreenshotTool, "maybe_copy_to_clipboard"):

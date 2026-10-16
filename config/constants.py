@@ -18,12 +18,11 @@ DEFAULT_WALLPAPER_DIR = Path.home() / "Pictures" / "壁纸"
 HAOWALLPAPER_CACHE_DIR = DEFAULT_WALLPAPER_DIR / "haowallpaper"
 SCREENSHOT_SAVE_DIR = DEFAULT_WALLPAPER_DIR / "screenshots"
 
-# 视频源文件
-VIDEO_SOURCE_DIR = Path(r"D:\软件\桌面工具\桌宠原型壁纸")
-VIDEO_FILES = [
-    VIDEO_SOURCE_DIR / "小噜噜在宠物店的打工vlog_哔哩哔哩_bilibili.mp4",
-    VIDEO_SOURCE_DIR / "噜噜土味情话继续发作_哔哩哔哩_bilibili.mp4",
-]
+# 视频源文件（仅原型素材抽帧用）
+# 把原型视频放进 <项目根>/assets/videos 即可复用 utils/video_extractor.py；
+# 目录不存在时自动跳过，不影响主程序运行。
+VIDEO_SOURCE_DIR = BASE_DIR / "assets" / "videos"
+VIDEO_FILES = sorted(VIDEO_SOURCE_DIR.glob("*.mp4")) if VIDEO_SOURCE_DIR.is_dir() else []
 
 # 动画配置
 ANIMATION_CONFIG = {
